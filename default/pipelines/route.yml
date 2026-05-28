@@ -1,0 +1,39 @@
+id: default
+groups: {}
+comments: []
+routes:
+  - id: default
+    name: default
+    final: false
+    disabled: true
+    pipeline: main
+    description: ""
+    enableOutputExpression: false
+    outputExpression: null
+    filter: "true"
+    clones:
+      - {}
+    output: default
+  - id: v5T4Bg
+    name: snowflake_login_history
+    final: false
+    disabled: false
+    pipeline: snowflake_api_login_history
+    description: Send Login History through the snowflake pipeline
+    enableOutputExpression: false
+    outputExpression: null
+    filter: "true"
+    clones:
+      - {}
+    output: default
+  - id: KkZ8cU
+    name: snowflake_query_history
+    final: true
+    disabled: false
+    pipeline: snowflake_api_query_history
+    description: Send Query History through the snowflake pipeline
+    enableOutputExpression: false
+    outputExpression: null
+    filter: "true"
+    clones: []
+    output: default

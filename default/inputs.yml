@@ -1,0 +1,64 @@
+in_snowflake_login_history:
+  type: collection
+  disabled: true
+  sendToRoutes: true
+  preprocess:
+    disabled: true
+  throttleRatePerSec: "0"
+  breakerRulesets:
+    - Snowflake API Ruleset
+  metadata:
+    - name: __packsource
+      value: "'cribl-snowflake-rest-io.snowflake-login-history'"
+    - name: sourcetype
+      value: "'snowflake:login'"
+    - name: index
+      value: C.vars['default_splunk_index']
+in_snowflake_query_history:
+  type: collection
+  disabled: true
+  sendToRoutes: true
+  preprocess:
+    disabled: true
+  throttleRatePerSec: "0"
+  breakerRulesets:
+    - Snowflake API Ruleset
+  metadata:
+    - name: __packsource
+      value: "'cribl-snowflake-rest-io.snowflake-query-history'"
+    - name: sourcetype
+      value: "'snowflake:query'"
+    - name: index
+      value: C.vars['default_splunk_index']
+in_snowflake_access_history:
+  type: collection
+  disabled: true
+  sendToRoutes: true
+  preprocess:
+    disabled: true
+  throttleRatePerSec: "0"
+  breakerRulesets:
+    - Snowflake API Ruleset
+  metadata:
+    - name: __packsource
+      value: "'cribl-snowflake-rest-io.snowflake-access-history'"
+    - name: sourcetype
+      value: "'snowflake:access'"
+    - name: index
+      value: C.vars['default_splunk_index']
+in_snowflake_sessions:
+  type: collection
+  disabled: true
+  sendToRoutes: true
+  preprocess:
+    disabled: true
+  throttleRatePerSec: "0"
+  breakerRulesets:
+    - Snowflake API Ruleset
+  metadata:
+    - name: __packsource
+      value: "'cribl-snowflake-rest-io.snowflake-sessions'"
+    - name: sourcetype
+      value: "'snowflake:session'"
+    - name: index
+      value: C.vars['default_splunk_index']

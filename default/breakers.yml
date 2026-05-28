@@ -1,0 +1,21 @@
+Snowflake API Ruleset:
+  lib: custom
+  minRawLength: 256
+  rules:
+    - condition: "true"
+      type: json_array
+      timestamp:
+        type: auto
+        length: 150
+      timestampTimezone: UTC
+      timestampEarliest: -420weeks
+      timestampLatest: +1week
+      maxEventBytes: 134217728
+      disabled: false
+      parserEnabled: false
+      shouldUseDataRaw: false
+      jsonExtractAll: false
+      eventBreakerRegex: /[\n\r]+(?!\s)/
+      name: Snowflake SQL API Response
+      jsonArrayField: data
+  description: "Event breaking rules for Snowflake SQL REST API responses. Extracts rows from the data array."

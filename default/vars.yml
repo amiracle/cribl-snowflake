@@ -1,0 +1,45 @@
+snowflake_account_identifier:
+  type: string
+  lib: custom
+  value: "'YOUR_ACCOUNT_IDENTIFIER'"
+  description: "REQUIRED: Your Snowflake account identifier (e.g., 'zgjymzt-nec65309' or 'lsc79078.us-east-1')."
+snowflake_auth_method:
+  type: string
+  lib: custom
+  value: "'oauth'"
+  description: "Authentication method: 'oauth' for refresh token flow, 'jwt' for key pair JWT bearer."
+snowflake_client_id:
+  type: string
+  lib: custom
+  value: "'YOUR_OAUTH_CLIENT_ID'"
+  description: "OAuth method: Client ID from your Snowflake Security Integration."
+snowflake_client_secret:
+  type: encryptedString
+  lib: custom
+  value: "YOUR_OAUTH_CLIENT_SECRET"
+  description: "OAuth method: Client Secret from your Snowflake Security Integration."
+snowflake_refresh_token:
+  type: encryptedString
+  lib: custom
+  value: "YOUR_REFRESH_TOKEN_OR_JWT"
+  description: "OAuth method: refresh token from auth code flow. JWT method: pre-generated JWT token."
+snowflake_warehouse:
+  type: string
+  lib: custom
+  value: "'COMPUTE_WH'"
+  description: "REQUIRED: Snowflake warehouse to use for executing queries."
+snowflake_role:
+  type: string
+  lib: custom
+  value: "'CRIBL_COLLECTOR_ROLE'"
+  description: "Role with access to SNOWFLAKE.ACCOUNT_USAGE views."
+default_splunk_index:
+  type: string
+  lib: custom
+  value: "'snowflake'"
+  description: "Default Splunk index for Snowflake audit data."
+default_splunk_sourcetype:
+  type: string
+  lib: custom
+  value: "'snowflake:audit'"
+  description: "Default Splunk sourcetype for Snowflake audit data."

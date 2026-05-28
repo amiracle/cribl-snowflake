@@ -1,0 +1,16 @@
+CkbHfg:
+  sampleName: snowflake_login_history.log
+  description: Snowflake Login History Events
+  tags: snowflake,api,sql,loginhistory
+  ttl: 0
+  created: 1750780312150
+  size: 41399
+  numEvents: 25
+3AurEB:
+  sampleName: snowflake_sql_api.log
+  description: Snowflake API pull
+  tags: snowflake,sql,api
+  ttl: 0
+  created: 1750775822444
+  size: 91138
+  numEvents: 14

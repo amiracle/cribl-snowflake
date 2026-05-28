@@ -1,0 +1,392 @@
+in_snowflake_login_history:
+  type: collection
+  ttl: 4h
+  ignoreGroupJobsLimit: false
+  removeFields: []
+  resumeOnBoot: false
+  schedule:
+    cronSchedule: "*/5 * * * *"
+    maxConcurrentRuns: 1
+    skippable: true
+    run:
+      rescheduleDroppedTasks: true
+      maxTaskReschedule: 1
+      logLevel: info
+      jobTimeout: 60m
+      mode: run
+      timeRangeType: relative
+      timeWarning: {}
+      expression: "true"
+      minTaskSize: 1MB
+      maxTaskSize: 10MB
+      stateTracking:
+        enabled: false
+    enabled: false
+  streamtags: []
+  workerAffinity: false
+  collector:
+    conf:
+      discovery:
+        discoverType: none
+      collectMethod: post_with_body
+      collectUrl: "`https://${C.vars['snowflake_account_identifier']}.snowflakecomputing.com/api/v2/statements`"
+      collectBody: "`{\"statement\":\"SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.LOGIN_HISTORY WHERE EVENT_TIMESTAMP > DATEADD(day, -7, CURRENT_TIMESTAMP()) ORDER BY EVENT_TIMESTAMP ASC LIMIT 10000\",\"database\":\"SNOWFLAKE\",\"schema\":\"ACCOUNT_USAGE\",\"warehouse\":\"COMPUTE_WH\",\"role\":\"CRIBL_COLLECTOR_ROLE\"}`"
+      pagination:
+        type: none
+      authentication: login
+      loginUrl: "`https://${C.vars['snowflake_account_identifier']}.snowflakecomputing.com/oauth/token-request`"
+      loginBody: "`grant_type=refresh_token&refresh_token=${encodeURIComponent(C.vars['snowflake_refresh_token'])}&client_id=${encodeURIComponent(C.vars['snowflake_client_id'])}&client_secret=${encodeURIComponent(C.vars['snowflake_client_secret'])}&redirect_uri=${encodeURIComponent('https://localhost')}`"
+      tokenRespAttribute: access_token
+      getAuthTokenFromHeader: false
+      authHeaderKey: Authorization
+      authHeaderExpr: "`Bearer ${token}`"
+      timeout: 0
+      useRoundRobinDns: false
+      disableTimeFilter: false
+      decodeUrl: false
+      rejectUnauthorized: true
+      captureHeaders: false
+      stopOnEmptyResults: true
+      safeHeaders: []
+      retryRules:
+        type: backoff
+        interval: 1000
+        limit: 5
+        multiplier: 2
+        maxIntervalMs: 20000
+        codes:
+          - 429
+          - 503
+        enableHeader: true
+        retryConnectTimeout: false
+        retryConnectReset: false
+        retryHeaderName: retry-after
+      __scheduling:
+        stateTracking: {}
+      collectRequestParams: []
+      collectRequestHeaders:
+        - name: Content-Type
+          value: "'application/json'"
+        - name: Accept
+          value: "'application/json'"
+        - name: X-Snowflake-Authorization-Token-Type
+          value: "`${C.vars['snowflake_auth_method'] === 'jwt' ? 'KEYPAIR_JWT' : 'OAUTH'}`"
+        - name: Authorization
+          value: "`${C.vars['snowflake_auth_method'] === 'jwt' ? 'Bearer ' + C.vars['snowflake_refresh_token'] : ''}`"
+      username: SET_VARIABLE_INSTEAD
+      password: SET_VARIABLE_INSTEAD
+    destructive: false
+    encoding: utf8
+    type: rest
+  input:
+    type: collection
+    staleChannelFlushMs: 10000
+    sendToRoutes: true
+    preprocess:
+      disabled: true
+    throttleRatePerSec: "0"
+    breakerRulesets: []
+    metadata:
+      - name: __packsource
+        value: "'cribl-snowflake-rest-io.snowflake-login-history'"
+      - name: sourcetype
+        value: "'snowflake:login'"
+      - name: index
+        value: C.vars['default_splunk_index']
+  savedState: {}
+  notifications: []
+  description: "Collects login history from Snowflake ACCOUNT_USAGE every 5 minutes."
+in_snowflake_query_history:
+  type: collection
+  ttl: 4h
+  ignoreGroupJobsLimit: false
+  removeFields: []
+  resumeOnBoot: false
+  schedule:
+    cronSchedule: "*/5 * * * *"
+    maxConcurrentRuns: 1
+    skippable: true
+    run:
+      rescheduleDroppedTasks: true
+      maxTaskReschedule: 1
+      logLevel: info
+      jobTimeout: 60m
+      mode: run
+      timeRangeType: relative
+      timeWarning: {}
+      expression: "true"
+      minTaskSize: 1MB
+      maxTaskSize: 10MB
+      stateTracking:
+        enabled: false
+    enabled: false
+  streamtags: []
+  workerAffinity: false
+  collector:
+    conf:
+      discovery:
+        discoverType: none
+      collectMethod: post_with_body
+      collectUrl: "`https://${C.vars['snowflake_account_identifier']}.snowflakecomputing.com/api/v2/statements`"
+      collectBody: "`{\"statement\":\"SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY WHERE START_TIME > DATEADD(day, -7, CURRENT_TIMESTAMP()) ORDER BY START_TIME ASC LIMIT 10000\",\"database\":\"SNOWFLAKE\",\"schema\":\"ACCOUNT_USAGE\",\"warehouse\":\"COMPUTE_WH\",\"role\":\"CRIBL_COLLECTOR_ROLE\"}`"
+      pagination:
+        type: none
+      authentication: login
+      loginUrl: "`https://${C.vars['snowflake_account_identifier']}.snowflakecomputing.com/oauth/token-request`"
+      loginBody: "`grant_type=refresh_token&refresh_token=${encodeURIComponent(C.vars['snowflake_refresh_token'])}&client_id=${encodeURIComponent(C.vars['snowflake_client_id'])}&client_secret=${encodeURIComponent(C.vars['snowflake_client_secret'])}&redirect_uri=${encodeURIComponent('https://localhost')}`"
+      tokenRespAttribute: access_token
+      getAuthTokenFromHeader: false
+      authHeaderKey: Authorization
+      authHeaderExpr: "`Bearer ${token}`"
+      timeout: 0
+      useRoundRobinDns: false
+      disableTimeFilter: false
+      decodeUrl: false
+      rejectUnauthorized: true
+      captureHeaders: false
+      stopOnEmptyResults: true
+      safeHeaders: []
+      retryRules:
+        type: backoff
+        interval: 1000
+        limit: 5
+        multiplier: 2
+        maxIntervalMs: 20000
+        codes:
+          - 429
+          - 503
+        enableHeader: true
+        retryConnectTimeout: false
+        retryConnectReset: false
+        retryHeaderName: retry-after
+      __scheduling:
+        stateTracking: {}
+      collectRequestParams: []
+      collectRequestHeaders:
+        - name: Content-Type
+          value: "'application/json'"
+        - name: Accept
+          value: "'application/json'"
+        - name: X-Snowflake-Authorization-Token-Type
+          value: "`${C.vars['snowflake_auth_method'] === 'jwt' ? 'KEYPAIR_JWT' : 'OAUTH'}`"
+        - name: Authorization
+          value: "`${C.vars['snowflake_auth_method'] === 'jwt' ? 'Bearer ' + C.vars['snowflake_refresh_token'] : ''}`"
+      username: SET_VARIABLE_INSTEAD
+      password: SET_VARIABLE_INSTEAD
+    destructive: false
+    encoding: utf8
+    type: rest
+  input:
+    type: collection
+    staleChannelFlushMs: 10000
+    sendToRoutes: true
+    preprocess:
+      disabled: true
+    throttleRatePerSec: "0"
+    breakerRulesets: []
+    metadata:
+      - name: __packsource
+        value: "'cribl-snowflake-rest-io.snowflake-query-history'"
+      - name: sourcetype
+        value: "'snowflake:query'"
+      - name: index
+        value: C.vars['default_splunk_index']
+  savedState: {}
+  notifications: []
+  description: "Collects query history from Snowflake ACCOUNT_USAGE every 5 minutes."
+in_snowflake_access_history:
+  type: collection
+  ttl: 4h
+  ignoreGroupJobsLimit: false
+  removeFields: []
+  resumeOnBoot: false
+  schedule:
+    cronSchedule: "*/15 * * * *"
+    maxConcurrentRuns: 1
+    skippable: true
+    run:
+      rescheduleDroppedTasks: true
+      maxTaskReschedule: 1
+      logLevel: info
+      jobTimeout: 60m
+      mode: run
+      timeRangeType: relative
+      timeWarning: {}
+      expression: "true"
+      minTaskSize: 1MB
+      maxTaskSize: 10MB
+      stateTracking:
+        enabled: false
+    enabled: false
+  streamtags: []
+  workerAffinity: false
+  collector:
+    conf:
+      discovery:
+        discoverType: none
+      collectMethod: post_with_body
+      collectUrl: "`https://${C.vars['snowflake_account_identifier']}.snowflakecomputing.com/api/v2/statements`"
+      collectBody: "`{\"statement\":\"SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.ACCESS_HISTORY WHERE QUERY_START_TIME > DATEADD(day, -7, CURRENT_TIMESTAMP()) ORDER BY QUERY_START_TIME ASC LIMIT 10000\",\"database\":\"SNOWFLAKE\",\"schema\":\"ACCOUNT_USAGE\",\"warehouse\":\"COMPUTE_WH\",\"role\":\"CRIBL_COLLECTOR_ROLE\"}`"
+      pagination:
+        type: none
+      authentication: login
+      loginUrl: "`https://${C.vars['snowflake_account_identifier']}.snowflakecomputing.com/oauth/token-request`"
+      loginBody: "`grant_type=refresh_token&refresh_token=${encodeURIComponent(C.vars['snowflake_refresh_token'])}&client_id=${encodeURIComponent(C.vars['snowflake_client_id'])}&client_secret=${encodeURIComponent(C.vars['snowflake_client_secret'])}&redirect_uri=${encodeURIComponent('https://localhost')}`"
+      tokenRespAttribute: access_token
+      getAuthTokenFromHeader: false
+      authHeaderKey: Authorization
+      authHeaderExpr: "`Bearer ${token}`"
+      timeout: 0
+      useRoundRobinDns: false
+      disableTimeFilter: false
+      decodeUrl: false
+      rejectUnauthorized: true
+      captureHeaders: false
+      stopOnEmptyResults: true
+      safeHeaders: []
+      retryRules:
+        type: backoff
+        interval: 1000
+        limit: 5
+        multiplier: 2
+        maxIntervalMs: 20000
+        codes:
+          - 429
+          - 503
+        enableHeader: true
+        retryConnectTimeout: false
+        retryConnectReset: false
+        retryHeaderName: retry-after
+      __scheduling:
+        stateTracking: {}
+      collectRequestParams: []
+      collectRequestHeaders:
+        - name: Content-Type
+          value: "'application/json'"
+        - name: Accept
+          value: "'application/json'"
+        - name: X-Snowflake-Authorization-Token-Type
+          value: "`${C.vars['snowflake_auth_method'] === 'jwt' ? 'KEYPAIR_JWT' : 'OAUTH'}`"
+        - name: Authorization
+          value: "`${C.vars['snowflake_auth_method'] === 'jwt' ? 'Bearer ' + C.vars['snowflake_refresh_token'] : ''}`"
+      username: SET_VARIABLE_INSTEAD
+      password: SET_VARIABLE_INSTEAD
+    destructive: false
+    encoding: utf8
+    type: rest
+  input:
+    type: collection
+    staleChannelFlushMs: 10000
+    sendToRoutes: true
+    preprocess:
+      disabled: true
+    throttleRatePerSec: "0"
+    breakerRulesets: []
+    metadata:
+      - name: __packsource
+        value: "'cribl-snowflake-rest-io.snowflake-access-history'"
+      - name: sourcetype
+        value: "'snowflake:access'"
+      - name: index
+        value: C.vars['default_splunk_index']
+  savedState: {}
+  notifications: []
+  description: "Collects access history from Snowflake ACCOUNT_USAGE every 15 minutes."
+in_snowflake_sessions:
+  type: collection
+  ttl: 4h
+  ignoreGroupJobsLimit: false
+  removeFields: []
+  resumeOnBoot: false
+  schedule:
+    cronSchedule: "*/15 * * * *"
+    maxConcurrentRuns: 1
+    skippable: true
+    run:
+      rescheduleDroppedTasks: true
+      maxTaskReschedule: 1
+      logLevel: info
+      jobTimeout: 60m
+      mode: run
+      timeRangeType: relative
+      timeWarning: {}
+      expression: "true"
+      minTaskSize: 1MB
+      maxTaskSize: 10MB
+      stateTracking:
+        enabled: false
+    enabled: false
+  streamtags: []
+  workerAffinity: false
+  collector:
+    conf:
+      discovery:
+        discoverType: none
+      collectMethod: post_with_body
+      collectUrl: "`https://${C.vars['snowflake_account_identifier']}.snowflakecomputing.com/api/v2/statements`"
+      collectBody: "`{\"statement\":\"SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.SESSIONS WHERE CREATED_ON > DATEADD(day, -7, CURRENT_TIMESTAMP()) ORDER BY CREATED_ON ASC LIMIT 10000\",\"database\":\"SNOWFLAKE\",\"schema\":\"ACCOUNT_USAGE\",\"warehouse\":\"COMPUTE_WH\",\"role\":\"CRIBL_COLLECTOR_ROLE\"}`"
+      pagination:
+        type: none
+      authentication: login
+      loginUrl: "`https://${C.vars['snowflake_account_identifier']}.snowflakecomputing.com/oauth/token-request`"
+      loginBody: "`grant_type=refresh_token&refresh_token=${encodeURIComponent(C.vars['snowflake_refresh_token'])}&client_id=${encodeURIComponent(C.vars['snowflake_client_id'])}&client_secret=${encodeURIComponent(C.vars['snowflake_client_secret'])}&redirect_uri=${encodeURIComponent('https://localhost')}`"
+      tokenRespAttribute: access_token
+      getAuthTokenFromHeader: false
+      authHeaderKey: Authorization
+      authHeaderExpr: "`Bearer ${token}`"
+      timeout: 0
+      useRoundRobinDns: false
+      disableTimeFilter: false
+      decodeUrl: false
+      rejectUnauthorized: true
+      captureHeaders: false
+      stopOnEmptyResults: true
+      safeHeaders: []
+      retryRules:
+        type: backoff
+        interval: 1000
+        limit: 5
+        multiplier: 2
+        maxIntervalMs: 20000
+        codes:
+          - 429
+          - 503
+        enableHeader: true
+        retryConnectTimeout: false
+        retryConnectReset: false
+        retryHeaderName: retry-after
+      __scheduling:
+        stateTracking: {}
+      collectRequestParams: []
+      collectRequestHeaders:
+        - name: Content-Type
+          value: "'application/json'"
+        - name: Accept
+          value: "'application/json'"
+        - name: X-Snowflake-Authorization-Token-Type
+          value: "`${C.vars['snowflake_auth_method'] === 'jwt' ? 'KEYPAIR_JWT' : 'OAUTH'}`"
+        - name: Authorization
+          value: "`${C.vars['snowflake_auth_method'] === 'jwt' ? 'Bearer ' + C.vars['snowflake_refresh_token'] : ''}`"
+      username: SET_VARIABLE_INSTEAD
+      password: SET_VARIABLE_INSTEAD
+    destructive: false
+    encoding: utf8
+    type: rest
+  input:
+    type: collection
+    staleChannelFlushMs: 10000
+    sendToRoutes: true
+    preprocess:
+      disabled: true
+    throttleRatePerSec: "0"
+    breakerRulesets: []
+    metadata:
+      - name: __packsource
+        value: "'cribl-snowflake-rest-io.snowflake-sessions'"
+      - name: sourcetype
+        value: "'snowflake:session'"
+      - name: index
+        value: C.vars['default_splunk_index']
+  savedState: {}
+  notifications: []
+  description: "Collects session data from Snowflake ACCOUNT_USAGE every 15 minutes."
