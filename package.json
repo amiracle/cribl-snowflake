@@ -1,0 +1,14 @@
+{
+  "name": "cribl-snowflake",
+  "version": "1.1.0",
+  "minLogStreamVersion": "4.0.0",
+  "author": "Kam Amir - Cribl",
+  "description": "Cribl pack for Snowflake allows users to pull data from the SQL API that includes last query and login information for auditing a Snowflake deployment. Supports OAuth2 refresh token and Key Pair JWT authentication.",
+  "displayName": "cribl-snowflake",
+  "tags": {
+    "streamtags": ["snowflake", "audit", "login_history", "query_history", "security"],
+    "dataType": ["logs"],
+    "useCase": ["filtering", "routing", "reduction", "aggregation"]
+  },
+  "exports": []
+}
