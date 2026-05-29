@@ -1,19 +1,19 @@
 snowflake_account_identifier:
   type: string
   lib: custom
-  value: "'ZGJYMZT-NEC65309'"
+  value: "'changeme'"
   description: "REQUIRED: Your Snowflake account identifier (e.g.,
     'zgjymzt-nec65309' or 'lsc79078.us-east-1')."
 snowflake_auth_method:
   type: string
   lib: custom
-  value: "'jwt'"
+  value: "'oauth'"
   description: "Authentication method: 'oauth' for refresh token flow, 'jwt' for
     key pair JWT bearer."
 snowflake_client_id:
   type: string
   lib: custom
-  value: "'1R4YoafYvUWSTomFTifYMixC4j8='"
+  value: "'changeme'"
   description: "OAuth method: Client ID from your Snowflake Security Integration."
 snowflake_client_secret:
   type: encryptedString
