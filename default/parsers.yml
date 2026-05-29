@@ -105,3 +105,40 @@ snowflake_login_history_parser:
     - CONNECTION
     - CLIENT_PRIVATE_LINK_ID
   lib: custom
+snowflake_access_history_parser:
+  type: csv
+  lib: custom
+  description: Snowflake Access History Table
+  tags: snowflake,access
+  fields:
+    - QUERY_ID
+    - QUERY_START_TIME
+    - DIRECT_OBJECTS_ACCESSED
+    - BASE_OBJECTS_ACCESSED
+    - OBJECTS_MODIFIED
+    - OBJECT_MODIFIED_BY_DDL
+    - POLICIES_REFERENCED
+    - PARENT_QUERY_ID
+    - EVENT_SOURCE
+    - USER_NAME
+    - ADDITIONAL_PROPERTIES
+    - ROOT_QUERY_ID
+snowflake_session_history_parser:
+  type: csv
+  lib: custom
+  description: Snowflake Session History Table
+  tags: snowflake,sessions
+  fields:
+    - SESSION_ID
+    - CREATED_ON
+    - USER_NAME
+    - AUTHENTICATION_METHOD
+    - LOGIN_EVENT_ID
+    - CLIENT_APPLICATION_VERSION
+    - CLIENT_APPLICATION_ID
+    - CLIENT_ENVIRONMENT
+    - CLIENT_BUILD_ID
+    - CLIENT_VERSION
+    - CLOSED_REASON
+    - IS_OPEN
+    - ACCESS_TIME

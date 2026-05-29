@@ -2,27 +2,14 @@ id: default
 groups: {}
 comments: []
 routes:
-  - id: default
-    name: default
-    final: false
-    disabled: true
-    pipeline: main
-    description: ""
-    enableOutputExpression: false
-    outputExpression: null
-    filter: "true"
-    clones:
-      - {}
-    output: default
   - id: v5T4Bg
     name: snowflake_login_history
-    final: false
+    final: true
     disabled: false
     pipeline: snowflake_api_login_history
     description: Send Login History through the snowflake pipeline
     enableOutputExpression: false
-    outputExpression: null
-    filter: "true"
+    filter: __inputId.includes('snowflake_login_history')
     clones:
       - {}
     output: default
@@ -33,7 +20,40 @@ routes:
     pipeline: snowflake_api_query_history
     description: Send Query History through the snowflake pipeline
     enableOutputExpression: false
-    outputExpression: null
+    filter: __inputId.includes('snowflake_query_history')
+    clones:
+      - {}
+    output: default
+  - id: UwLf6W
+    name: snowflake_access_history
+    final: true
+    disabled: false
+    pipeline: snowflake_api_access_history
+    description: Send Access History through the snowflake pipeline
+    enableOutputExpression: false
+    filter: __inputId.includes('snowflake_access_history')
+    clones:
+      - {}
+    output: default
+  - id: FJB7m0
+    name: snowflake_session_history
+    final: true
+    disabled: false
+    pipeline: snowflake_api_session_history
+    description: Send Session History through the snowflake pipeline
+    enableOutputExpression: false
+    filter: __inputId.includes('snowflake_session_history')
+    clones:
+      - {}
+    output: default
+  - id: default
+    name: default
+    final: false
+    disabled: true
+    pipeline: main
+    description: ""
+    enableOutputExpression: false
     filter: "true"
-    clones: []
+    clones:
+      - {}
     output: default
