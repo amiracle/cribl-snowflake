@@ -7,10 +7,34 @@ CkbHfg:
   size: 41399
   numEvents: 25
 3AurEB:
-  sampleName: snowflake_sql_api.log
-  description: Snowflake API pull
-  tags: snowflake,sql,api
+  sampleName: snowflake_query_api.log
+  description: Snowflake API query history
+  tags: snowflake,sql,api,query
   ttl: 0
   created: 1750775822444
   size: 91138
   numEvents: 14
+8X3CLu:
+  sampleName: snowflake_access_history.log
+  description: Snowflake Access History
+  tags: snowflake,access
+  ttl: 0
+  created: 1779996573348
+  size: 213324
+  numEvents: 100
+N0WqGJ:
+  sampleName: snowflake_session_history.log
+  description: Snowflake Session History
+  tags: snowflake,session
+  ttl: 0
+  created: 1779996603744
+  size: 249814
+  numEvents: 100
+azDCeE:
+  sampleName: snowflake_query_history.log
+  description: Snowflake Query History
+  tags: snowflake,query
+  ttl: 0
+  created: 1779998753385
+  size: 325841
+  numEvents: 100

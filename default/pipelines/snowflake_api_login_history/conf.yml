@@ -8,7 +8,6 @@ asyncFuncTimeout: 1000
 functions:
   - id: comment
     filter: "true"
-    disabled: null
     conf:
       comment: "This step takes the initial payload in JSON format and parses it into
         KV Pairs based on the parser. It also removes all null and values = 0. "
@@ -44,7 +43,6 @@ functions:
     description: Parses out the Login History and removes all null and 0 values
   - id: comment
     filter: "true"
-    disabled: null
     conf:
       comment: This step drops the initial metadata results. You an disable this step
         if you want to return the JSON metadata event.
@@ -55,7 +53,6 @@ functions:
     description: Drops first line with all the metadata
   - id: comment
     filter: "true"
-    disabled: null
     conf:
       comment: This step removes the orphaned closed bracket at the end of the event
         stream.
@@ -64,4 +61,15 @@ functions:
     disabled: false
     conf: {}
     description: Drops line with orphaned closed bracket
+  - id: comment
+    filter: "true"
+    conf:
+      comment: Drop the _raw field since it is redundant with all the events in KV
+        Pairs.
+  - id: eval
+    filter: "true"
+    conf:
+      printUndefineds: false
+      remove:
+        - _raw
 description: Snowflake SQL API Pull

@@ -1,0 +1,183 @@
+output: default
+streamtags:
+  - snowflake
+  - api
+  - sql
+groups: {}
+asyncFuncTimeout: 1000
+functions:
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: Drop the first event which contains Snowflake API metadata
+        (resultSetMetaData) and is not actual data.
+  - id: drop
+    filter: _raw.search(/resultSetMetaData/i)>=0
+    disabled: false
+    conf: {}
+    description: Drops first line with all the metadata
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: Drop the final event which contains only an orphaned closing bracket
+        from the Snowflake API JSON response.
+  - id: drop
+    filter: /^\s*[\]\}]\s*$/.test(_raw)
+    disabled: false
+    conf: {}
+    description: Drops event with orphaned bracket
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: Clean trailing comma from _raw and parse the JSON array into individual
+        named fields based on Snowflake ACCESS_HISTORY column order.
+  - id: eval
+    filter: "true"
+    disabled: false
+    conf:
+      add:
+        - disabled: false
+          name: __parsed
+          value: JSON.parse(_raw.replace(/,\s*$/, ''))
+        - disabled: false
+          name: QUERY_ID
+          value: __parsed[0]
+        - disabled: false
+          name: QUERY_START_TIME
+          value: __parsed[1]
+        - disabled: false
+          name: USER_NAME
+          value: __parsed[2]
+        - disabled: false
+          name: DIRECT_OBJECTS_ACCESSED
+          value: __parsed[3]
+        - disabled: false
+          name: BASE_OBJECTS_ACCESSED
+          value: __parsed[4]
+        - disabled: false
+          name: OBJECTS_MODIFIED
+          value: __parsed[5]
+        - disabled: false
+          name: OBJECT_MODIFIED_BY_DDL
+          value: __parsed[6]
+        - disabled: false
+          name: POLICIES_REFERENCED
+          value: __parsed[7]
+      remove:
+        - __parsed
+    description: Parse _raw JSON array and assign fields by index
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: Parse nested JSON string fields into actual objects/arrays. The
+        Snowflake API returns these as escaped JSON strings within the array.
+  - id: eval
+    filter: "true"
+    disabled: false
+    conf:
+      add:
+        - disabled: false
+          name: DIRECT_OBJECTS_ACCESSED
+          value: "typeof DIRECT_OBJECTS_ACCESSED === 'string' ?
+            JSON.parse(DIRECT_OBJECTS_ACCESSED) : DIRECT_OBJECTS_ACCESSED"
+        - disabled: false
+          name: BASE_OBJECTS_ACCESSED
+          value: "typeof BASE_OBJECTS_ACCESSED === 'string' ?
+            JSON.parse(BASE_OBJECTS_ACCESSED) : BASE_OBJECTS_ACCESSED"
+        - disabled: false
+          name: OBJECTS_MODIFIED
+          value: "typeof OBJECTS_MODIFIED === 'string' ? JSON.parse(OBJECTS_MODIFIED) :
+            OBJECTS_MODIFIED"
+        - disabled: false
+          name: OBJECT_MODIFIED_BY_DDL
+          value: "typeof OBJECT_MODIFIED_BY_DDL === 'string' ?
+            JSON.parse(OBJECT_MODIFIED_BY_DDL) : OBJECT_MODIFIED_BY_DDL"
+      remove: []
+    description: Parse nested JSON strings into objects
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: Wrap OBJECT_MODIFIED_BY_DDL in an array if it is a single object, so it
+        can be unrolled the same way as the array fields.
+  - id: eval
+    filter: OBJECT_MODIFIED_BY_DDL && typeof OBJECT_MODIFIED_BY_DDL === 'object' &&
+      !Array.isArray(OBJECT_MODIFIED_BY_DDL)
+    disabled: false
+    conf:
+      add:
+        - disabled: false
+          name: OBJECT_MODIFIED_BY_DDL
+          value: "[OBJECT_MODIFIED_BY_DDL]"
+      remove: []
+    description: Wrap single DDL object into array for unrolling
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: Unroll OBJECTS_MODIFIED array so each modified object becomes its own
+        event with all parent fields preserved.
+  - id: unroll
+    filter: OBJECTS_MODIFIED && Array.isArray(OBJECTS_MODIFIED) &&
+      OBJECTS_MODIFIED.length > 0
+    disabled: false
+    conf:
+      srcExpr: OBJECTS_MODIFIED
+      dstField: OBJECTS_MODIFIED
+    description: Unroll OBJECTS_MODIFIED - one event per modified object
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: Unroll OBJECT_MODIFIED_BY_DDL array so each DDL modification becomes
+        its own event with all parent fields preserved.
+  - id: unroll
+    filter: OBJECT_MODIFIED_BY_DDL && Array.isArray(OBJECT_MODIFIED_BY_DDL) &&
+      OBJECT_MODIFIED_BY_DDL.length > 0
+    disabled: false
+    conf:
+      srcExpr: OBJECT_MODIFIED_BY_DDL
+      dstField: OBJECT_MODIFIED_BY_DDL
+    description: Unroll OBJECT_MODIFIED_BY_DDL - one event per DDL modification
+  - id: comment
+    filter: "true"
+    disabled: false
+    conf:
+      comment: Remove null fields and empty arrays to keep events clean.
+  - id: eval
+    filter: "true"
+    disabled: false
+    conf:
+      printUndefineds: false
+      add:
+        - disabled: false
+          name: DIRECT_OBJECTS_ACCESSED
+          value: "Array.isArray(DIRECT_OBJECTS_ACCESSED) && DIRECT_OBJECTS_ACCESSED.length
+            === 0 ? undefined : DIRECT_OBJECTS_ACCESSED"
+        - disabled: false
+          name: BASE_OBJECTS_ACCESSED
+          value: "Array.isArray(BASE_OBJECTS_ACCESSED) && BASE_OBJECTS_ACCESSED.length ===
+            0 ? undefined : BASE_OBJECTS_ACCESSED"
+        - disabled: false
+          name: POLICIES_REFERENCED
+          value: "Array.isArray(POLICIES_REFERENCED) && POLICIES_REFERENCED.length === 0 ?
+            undefined : POLICIES_REFERENCED"
+      remove: []
+    description: Remove empty arrays to keep events clean
+  - id: comment
+    filter: "true"
+    conf:
+      comment: Drop the _raw field since it is redundant with all the events in KV
+        Pairs.
+  - id: eval
+    filter: "true"
+    conf:
+      printUndefineds: false
+      remove:
+        - _raw
+description: Snowflake Access History - parse JSON array, unroll nested objects
+  into individual events
