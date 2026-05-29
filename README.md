@@ -102,7 +102,7 @@ curl -X POST \
   -d 'grant_type=authorization_code&code=<AUTH_CODE>&client_id=<url_encoded_client_id>&client_secret=<url_encoded_client_secret>&redirect_uri=https%3A%2F%2Flocalhost'
 ```
 
-Save the `refresh_token` from the response (include the `ver:2:` prefix — it's part of the token).
+Save the `refresh_token` from the response (include the `ver:4:` prefix — it's part of the token).
 
 ### Step 6: Configure Pack Variables
 
